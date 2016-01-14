@@ -49,7 +49,10 @@ function addObservers!(simLog::SimLog, ast::AdaptiveStressTest)
   addObserver(ast.sim, "Initial",    x -> log_initial!(simLog, x))
   addObserver(ast.sim, "Command",    x -> log_command!(simLog, x))
   addObserver(ast.sim, "Sensor",     x -> log_sensor!(simLog, x))
-  addObserver(ast.sim, "CAS",        x -> log_ra!(simLog, x))
+  addObserver(ast.sim, "CAS",        x -> begin
+                                            log_ra!(simLog, x)
+                                            log_encounter!(simLog, x)
+                                          end)
   addObserver(ast.sim, "Response",   x -> log_response!(simLog, x))
   addObserver(ast.sim, "Dynamics",   x -> log_adm!(simLog, x))
   addObserver(ast.sim, "WorldModel", x -> log_wm!(simLog, x))
@@ -427,8 +430,52 @@ function extract_sensor(sr::ACASXSensor)
                            intr_vec), ROUND_NDECIMALS, enable = ENABLE_ROUNDING)
 end
 
-function log_ra!(simLog::SimLog, args)
+function log_encounter!(simLog::SimLog, args)
+  #[aircraft_number, time_index, cas]
+  aircraft_number = args[1]
+  t_index = args[2]
+  cas = args[3]
 
+  check_key!(simLog, "var_names")
+
+  if !haskey(simLog["var_names"], "encounter")
+    simLog["var_names"]["encounter"] = extract_encounter_names(cas)
+  end
+
+
+  v = extract_encounter(cas)
+  check_key!(simLog, "encounter", subkey = "aircraft")
+  d_a = simLog["encounter"]["aircraft"]
+
+  check_key!(d_a, "$(aircraft_number)", subkey = "time")
+  d_t = d_a["$(aircraft_number)"]["time"]
+
+  d_t["$(t_index)"] = v
+
+end
+
+#TODO: This is only for EvU with 1 intruder!
+extract_encounter_names(cas::Union(ACASX_CCAS,ACASX_ADD)) = String["time", "Input.own.modes.0", "Input.own.psi.0", "Input.own.h.0", "Input.own.z.0", "Input.intruder.modes.0.1", "Input.intruder.sr.0.1", "Input.intruder.chi.0.1", "Input.intruder.z.0.1", "Input.intruder.quant.0.1", "Input.intruder.equipage.0.1", "Input.intruder.sensitivity_index.0.1", "Input.intruder.cvc.0.1", "Input.intruder.vrc.0.1", "Input.intruder.vsb.0.1"]
+
+function extract_encounter(cas::Union(ACASX_CCAS,ACASX_ADD))
+  #TODO: this is only for EvU with 1 intruder!
+  return round_floats(Any[cas.input.ownInput.modes,
+                          cas.input.ownInput.psi,
+                          cas.input.ownInput.h,
+                          cas.input.ownInput.z,
+                          cas.input.intruders[1].modes,
+                          cas.input.intruders[1].sr,
+                          cas.input.intruders[1].chi,
+                          cas.input.intruders[1].z,
+                          cas.input.intruders[1].quant,
+                          cas.input.intruders[1].equipage.val,
+                          cas.input.intruders[1].sensitivity_index,
+                          cas.input.intruders[1].cvc,
+                          cas.input.intruders[1].vrc,
+                          cas.input.intruders[1].vsb], ROUND_NDECIMALS, enable = ENABLE_ROUNDING)
+end
+
+function log_ra!(simLog::SimLog, args)
   #[aircraft_number, time_index, cas]
   aircraft_number = args[1]
   t_index = args[2]
