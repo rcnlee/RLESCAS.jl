@@ -32,6 +32,22 @@
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 # *****************************************************************************
 
+#=
+# Find a suitable solution for including this!
+const ROOT_DIR      = dirname(Base.source_path())
+const PKG_DIR       = joinpath(string(ROOT_DIR,"/../../../"))
+push!(LOAD_PATH, PKG_DIR)
+push!(LOAD_PATH, "/Users/guckd/.julia/v0.3")
+#const ACASXCAS = Pkg.dir("../ACASXValidation/src/acasxvalidation.jl")
+#include(ACASXCAS)
+
+# Set the required pathes such that we can load all required ACAS-X functions
+const TRM_DIR       = joinpath(string(PKG_DIR,"acasx_trm/julia/"))
+const ACASX_DIR     = TRM_DIR
+=#
+
+push!(LOAD_PATH, "/Users/guckd/.julia/v0.3")
+
 using ConfParser
 using RLESUtils: RunCases
 
@@ -199,6 +215,8 @@ function mcts_main()
       elseif o == "csv"
         include(Pkg.dir("RLESCAS/src/converters/json_to_csv.jl"))
         json_to_csv(filename)
+        include(Pkg.dir("RLESCAS/src/converters/json_to_encounter.jl"))
+        json_to_encounter(filename)
       elseif o == "label270_text"
         include(Pkg.dir("RLESCAS/src/tools/label270_to_text.jl"))
         label270_to_text(filename)
