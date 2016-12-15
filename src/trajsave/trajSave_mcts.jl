@@ -63,6 +63,8 @@ function MCTSStudy(;
   MCTSStudy(fileroot)
 end
 
+include("../defines/statelogs.jl") #statelogs only
+
 function trajSave(study_params::MCTSStudy,
                   cases::Cases=Cases(Case());
                   outdir::AbstractString="./", 
@@ -80,7 +82,9 @@ function trajSave(study_params::MCTSStudy,
          sim = defineSim(sim_params)
          ast = defineAST(sim, ast_params)
 
+         statelogs = statelog_setup(ast.sim) #statelogs only
          reward, action_seq = stress_test(ast, mcts_params)
+         statelog_finish(ast.sim, statelogs) #statelogs only
 
          #replay to get logs
          simLog = SimLog()
