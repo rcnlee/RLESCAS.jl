@@ -567,9 +567,12 @@ function extract_ra_detailed_units(cas::Union{ACASX_CCAS,ACASX_ADD})
           for i = 1:cas.max_intruders]...)
 end
 
+function is_ra_active(cas::Union{ACASX_CCAS,ACASX_ADD})
+    (cas.output.dh_min > -9999.0 || cas.output.dh_max < 9999.0)
+end
 function extract_ra_detailed(cas::Union{ACASX_CCAS,ACASX_ADD}) #log everything
 
-  ra_active = (cas.output.dh_min > -9999.0 || cas.output.dh_max < 9999.0)::Bool
+  ra_active = is_ra_active(cas)::Bool
 
   ownInput = Any[cas.input.ownInput.dz,
              cas.input.ownInput.z,
