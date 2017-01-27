@@ -32,19 +32,35 @@
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 # *****************************************************************************
 
+println("""$(Dates.format(now()-Dates.Hour(5),"yyyymmddHHMMSS")): MCTS start""")
+
 using Compat
 import Compat: ASCIIString, UTF8String
 
+print("mcts.jl: using RLESCAS..."); flush(STDOUT);
 using RLESCAS
+println("  Done"); flush(STDOUT);
 using ConfParser
 using RLESUtils, RunCases
 
 function parseargs(args::Vector{UTF8String})
   #arg1 = config file
-  if length(args) != 1
-    error("wrong number of arguments.  \nCommand line usage: julia mcts.jl config.ini")
+  if length(args) < 1 || length(args) > 3
+    error("wrong number of arguments.  \nCommand line usage: julia mcts.jl config.ini [<first enc #> [<last enc #>]]")
   end
-  return configfile = convert(ASCIIString, args[1])
+
+  configfile = convert(ASCIIString, args[1])
+  if (length(args) > 1)
+    if (length(args) > 2)
+      encounters = "$(args[2])-$(args[3])"
+    else
+      encounters = args[2]
+    end
+  else
+    encounters = ""
+  end
+
+  return (configfile, encounters)
 end
 
 # the default one in the package isn't meant to return the whole block as a dict
@@ -60,7 +76,7 @@ function check(condition::Bool, errormsg::ASCIIString="check failed")
 end
 
 function mcts_main()
-  configfile = parseargs(ARGS)
+  (configfile, encountersArg) = parseargs(ARGS)
   conf = ConfParse(configfile)
   parse_conf!(conf)
 
@@ -97,7 +113,12 @@ function mcts_main()
       config["sim_params.dynamics_model"] = [Symbol(v[1])]
     elseif k == "encounters"
       check(length(v) >= 1, "config: encounters: invalid number of parameters ($(length(v)))")
-      encounters = parse_ranges(v)
+      if (length(encountersArg) > 0)
+        encounters = parse_ranges([encountersArg])
+      else
+        encounters = parse_ranges(v)
+      end
+      println("Encounters to run: $encounters")
       config["sim_params.encounter_number"] = encounters
     elseif k == "initial"
       check(length(v) == 1, "config: initial: invalid number of parameters ($(length(v)))")
