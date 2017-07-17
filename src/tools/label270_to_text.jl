@@ -44,7 +44,7 @@ label270_to_text{T<:AbstractString}(infiles::Vector{T}) = map(label270_to_text, 
 function label270_to_text(infile::AbstractString)
     d = trajLoad(infile)
 
-    outfileroot = getSaveFileRoot(infile)
+    outfileroot = getLogFileRoot(infile)
     outfile = string(outfileroot, "_label270.txt")
     f = open(outfile, "w")
 

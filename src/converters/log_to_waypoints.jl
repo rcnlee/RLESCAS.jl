@@ -147,7 +147,7 @@ function j2w_update(d::TrajLog, aircraft_number::Int64)
 end
 
 function log_to_waypoints(filename::AbstractString)
-  log_to_waypoints([filename], outfile = string(getSaveFileRoot(filename), "_waypoints.dat"))
+  log_to_waypoints([filename], outfile = string(getLogFileRoot(filename), "_waypoints.dat"))
 end
 
 end #module

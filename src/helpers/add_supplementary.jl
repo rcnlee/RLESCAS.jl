@@ -69,7 +69,7 @@ function add_label270(file::AbstractString)
         df[:label270] = labels
         df[:label270_short] = label_shorts
     end
-    trajSave(getSaveFileRoot(file), d)
+    trajSave(getLogFileRoot(file), d)
 end
 
 add_supplementary{T<:AbstractString}(files::Vector{T}) = map(add_supplementary, files)

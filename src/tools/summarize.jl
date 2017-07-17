@@ -42,7 +42,7 @@ using ..SaveHelpers
 function summarize(filename::AbstractString; ndecimals::Int=2)
     d = trajLoad(filename)
 
-    outfilename = string(getSaveFileRoot(filename), "_summary.txt")
+    outfilename = string(getLogFileRoot(filename), "_summary.txt")
     f = open(outfilename, "w")
 
     println(f, "encounter = $(get_encounter_id(d))")
