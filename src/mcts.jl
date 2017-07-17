@@ -33,27 +33,26 @@
 # *****************************************************************************
 
 using Compat
-import Compat: ASCIIString, UTF8String
 
 using RLESCAS
 using ConfParser
 using RLESUtils, RunCases
 
-function parseargs(args::Vector{UTF8String})
+function parseargs(args::Vector{String})
   #arg1 = config file
   if length(args) != 1
     error("wrong number of arguments.  \nCommand line usage: julia mcts.jl config.ini")
   end
-  return configfile = convert(ASCIIString, args[1])
+  return configfile = args[1]
 end
 
 # the default one in the package isn't meant to return the whole block as a dict
 #override
-function retrieve_block(s::ConfParse, block::ASCIIString)
+function retrieve_block(s::ConfParse, block::String)
   haskey(s._data, block) ? s._data[block] : []
 end
 
-function check(condition::Bool, errormsg::ASCIIString="check failed")
+function check(condition::Bool, errormsg::String="check failed")
   if !condition
     error(errormsg)
   end
@@ -67,17 +66,16 @@ function mcts_main()
   search_method = "mcts" #or "mcbest"
   number_of_aircraft = -1
   encounter_ranges = nothing
-  config = Dict{ASCIIString,Vector{Any}}()
-  output_filters = ASCIIString[]
-  outputs = ASCIIString[]
+  config = Dict{String,Vector{Any}}()
+  output_filters = String[]
+  outputs = String[]
   output_dir = "./"
   quiet = false
 
   #Process default block
   for (k, v) in retrieve_block(conf, "default")
-    #Obj2Dict doesn't work well with UTF8String and substring
-    #work exclusively in ASCIIString
-    v = convert(Array{ASCIIString}, v)
+    #work exclusively in String
+    v = convert(Array{String}, v)
     if k == "search_method"
       check(length(v) == 1, "config: search_method: invalid number of parameters ($(length(v)))")
       search_method = v[1]
@@ -96,6 +94,15 @@ function mcts_main()
     elseif k == "response_model"
       check(length(v) == 1)
       config["sim_params.response_model"] = [Symbol(v[1])]
+    elseif k == "antiaccel_mode"
+      check(length(v) == 1)
+      config["sim_params.antiaccel_mode"] = [Symbol(v[1])]
+    elseif k == "antiaccel_history_length"
+      check(length(v) == 1)
+      config["sim_params.antiaccel_history_length"] = [parse(Int,v[1])]
+    elseif k == "antiaccel_thresh"
+      check(length(v) == 1)
+      config["sim_params.antiaccel_thresh"] = [parse(Float64, v[1])]
     elseif k == "cas_model"
       check(length(v) == 1)
       config["sim_params.cas_model"] = [Symbol(v[1])]
@@ -146,10 +153,10 @@ function mcts_main()
       check(length(v) == 1, "config: output_dir: invalid number of parameters ($(length(v)))")
       output_dir = abspath(v[1])
     elseif k == "output_filters"
-      filters = map(x -> convert(ASCIIString, x), v)
+      filters = map(x -> convert(String, x), v)
       output_filters = vcat(output_filters, filters)
     elseif k == "outputs"
-      outs = map(x -> convert(ASCIIString, x), v)
+      outs = map(x -> convert(String, x), v)
       outputs = vcat(outputs, outs)
     elseif k == "quiet"
       check(length(v) == 1, "config: quiet: invalid number of parameters ($(length(v)))")
@@ -186,7 +193,7 @@ function mcts_main()
                             outdir=output_dir)
 end
 
-function remove_by_key!(config::Dict{ASCIIString,Vector{Any}}, searchkey::AbstractString)
+function remove_by_key!(config::Dict{String,Vector{Any}}, searchkey::AbstractString)
     for k in keys(config)
         if contains(k, searchkey)
             warn("config: ignoring incompatible key $k")
@@ -195,7 +202,7 @@ function remove_by_key!(config::Dict{ASCIIString,Vector{Any}}, searchkey::Abstra
     end
 end
 
-function parse_ranges(ranges::Vector{ASCIIString})
+function parse_ranges(ranges::Vector{String})
   #Only supports int ranges delimited by -, : or ,
   #e.g., 1-5,7-10,12
   out = Int[]
@@ -213,8 +220,8 @@ function parse_ranges(ranges::Vector{ASCIIString})
   return out
 end
 
-function map_block!(config::Dict{ASCIIString,Vector{Any}}, conf::ConfParse,
-                    from_block::ASCIIString, to_param::ASCIIString; separator::ASCIIString=".")
+function map_block!(config::Dict{String,Vector{Any}}, conf::ConfParse,
+                    from_block::String, to_param::String; separator::String=".")
   for (k, v) in retrieve_block(conf, from_block)
     composite_key = string(to_param, separator, k)
     config[composite_key] = v
