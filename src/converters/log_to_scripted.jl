@@ -163,7 +163,7 @@ function j2s_update(d::TrajLog, aircraft_number::Int64)
 end
 
 function log_to_scripted(filename::AbstractString)
-  log_to_scripted([filename], outfile = string(getSaveFileRoot(filename), "_scripted.dat"))
+  log_to_scripted([filename], outfile = string(getLogFileRoot(filename), "_scripted.dat"))
 end
 
 end #module

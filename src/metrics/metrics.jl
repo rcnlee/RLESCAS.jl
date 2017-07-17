@@ -34,7 +34,8 @@
 
 module Metrics
 
-export nmac_rate, num_nmacs, num_nonnmacs, avg_reward, std_reward, reward_distr
+export nmac_rate, num_nmacs, num_nonnmacs, avg_reward, std_reward, get_rewards,
+    unnormalized_nmac_prob
 
 using ..DefineSave
 using ..SaveHelpers
@@ -43,15 +44,25 @@ num_nmacs(fs::Vector{String}) = count(is_nmac, fs)
 num_nonnmacs(fs::Vector{String}) = count(x->!is_nmac(x), fs)
 nmac_rate(fs::Vector{String}) = num_nmacs(fs) / length(fs)
 
-#reward distribution
-function reward_distr(fs::Vector{String}) 
+#vector of rewards
+function get_rewards(fs::Vector{String}) 
     map(fs) do f
         d = trajLoad(f)
         get_reward(d)
     end
 end
 
-avg_reward(fs::Vector{String}) = mean(reward_distr(fs))
-std_reward(fs::Vector{String}) = std(reward_distr(fs))
+avg_reward(fs::Vector{String}) = mean(get_rewards(fs))
+std_reward(fs::Vector{String}) = std(get_rewards(fs))
+
+function unnormalized_nmac_prob(fs::Vector{String})
+    fs = nmacs_only(fs)
+    s = 0.0
+    for f in fs
+        d = trajLoad(f)
+        s += exp(get_logprob(d))
+    end
+    s
+end
 
 end #module

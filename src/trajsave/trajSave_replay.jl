@@ -53,7 +53,7 @@ using ..SaveTypes
 function trajReplay(savefile::AbstractString; fileroot::AbstractString="")
     d = trajLoad(savefile)
     if isempty(fileroot)
-        fileroot = string(getSaveFileRoot(savefile), "_replay")
+        fileroot = string(getLogFileRoot(savefile), "_replay")
     end
     trajReplay(d; fileroot=fileroot)
 end
@@ -80,7 +80,7 @@ end
 function fill_replay(filename::AbstractString; overwrite::Bool=false)
     fillfile = fill_to_max_time(filename)
     if overwrite
-        outfile = trajReplay(fillfile, fileroot=getSaveFileRoot(filename))
+        outfile = trajReplay(fillfile, fileroot=getLogFileRoot(filename))
     else
         outfile = trajReplay(fillfile)
     end

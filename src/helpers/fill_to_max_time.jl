@@ -63,7 +63,7 @@ function fill_to_max_time(filename::AbstractString)
     action_seq = vcat(action_seq, actions_to_append)
 
     set_action_seq!(d, action_seq)
-    outfilename = trajSave(string(getSaveFileRoot(filename), "_filled"), d)
+    outfilename = trajSave(string(getLogFileRoot(filename), "_filled"), d)
     println("File: ", filename, "; Steps appended: ", steps_to_append)
 
     outfilename

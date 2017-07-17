@@ -35,8 +35,8 @@
 module DefineSave
 
 export TrajLog
-export trajSave, trajLoad, getSaveFileRoot
-export readdirSavs, isSave
+export trajSave, trajLoad, getLogFileRoot
+export readdirLogs, isLog
 
 using RLESUtils, FileUtils, Loggers
 
@@ -59,10 +59,10 @@ function trajLoad(logfile::AbstractString)
     TrajLog(load_log(file)) #return
 end
 
-readdirSavs(dir::AbstractString=".") = readdir_ext(".sav", dir)
-isSave(f::AbstractString) = endswith(f, ".sav")
+readdirLogs(dir::AbstractString=".") = readdir_ext(".zip", dir)
+isLog(f::AbstractString) = endswith(f, ".zip")
 
-function getSaveFileRoot(file::AbstractString)
+function getLogFileRoot(file::AbstractString)
     splitext(file)[1]
 end
 

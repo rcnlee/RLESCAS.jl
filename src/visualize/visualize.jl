@@ -443,7 +443,7 @@ function trajPlot(savefile::AbstractString; format::Symbol=:TEXPDF)
     add_supplementary(savefile)
     d = trajLoad(savefile)
 
-    outfileroot = getSaveFileRoot(savefile)
+    outfileroot = getLogFileRoot(savefile)
     trajPlot(outfileroot, d, format=format)
 
     savefile

@@ -52,7 +52,7 @@ function log_to_csv{T<:AbstractString}(savefile::AbstractString,
 
     d = trajLoad(savefile)
     num_aircraft = get_num_aircraft(d)
-    fileroot = getSaveFileRoot(savefile)
+    fileroot = getLogFileRoot(savefile)
     for i = 1:num_aircraft
         D = join_all(map(x->get_log(d, x, i), lognames)...; on=:t)
         filename = string(fileroot, "_aircraft$i.csv")
