@@ -69,7 +69,7 @@ function postprocess(filename::AbstractString, opts::StandardPostProc)
   add_supplementary(filename)
   #filters
   for f in filters
-    if f == "nmacs_only" && !nmacs_only(filename)
+    if f == "nmacs_only" && !is_nmac(filename)
       return #if it fails any of the filters, we're done
     end
   end
