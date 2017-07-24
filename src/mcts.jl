@@ -83,8 +83,8 @@ function mcts_main()
       check(length(v) == 1, "config: number_of_aircraft: invalid number of parameters ($(length(v)))")
       config["sim_params.num_aircraft"] = [parse(Int,v[1])]
     elseif k == "encounter_equipage"
-      check(length(v) == 1)
-      config["sim_params.encounter_equipage"] = [Symbol(v[1])]
+      check(length(v) >= 1)
+      config["sim_params.encounter_equipage"] = [Symbol.(v)]
     elseif k == "encounter_model"
       check(length(v) == 1)
       config["sim_params.encounter_model"] = [Symbol(v[1])]
@@ -134,20 +134,20 @@ function mcts_main()
       mcbest_samples = parse(Int,v[1])
       config["mcbest_params.n"] = [mcbest_samples]
     elseif k == "libcas"
-      check(length(v) == 1, "config: libcas: invalid number of parameters ($(length(v)))")
-      libcas = abspath(v[1])
+      check(length(v) >= 1, "config: libcas: invalid number of parameters ($(length(v)))")
+      libcas = abspath.(v)
       config["sim_params.libcas"] = [libcas]
     elseif k == "libcas_config"
-      check(length(v) == 1, "config: libcas_config: invalid number of parameters ($(length(v)))")
-      libcas_config = abspath(v[1])
+      check(length(v) >= 1, "config: libcas_config: invalid number of parameters ($(length(v)))")
+      libcas_config = abspath.(v)
       config["sim_params.libcas_config"] = [libcas_config]
     elseif k == "libcas2"
-      check(length(v) == 1, "config: libcas2: invalid number of parameters ($(length(v)))")
-      libcas2 = abspath(v[1])
+      check(length(v) >= 1, "config: libcas2: invalid number of parameters ($(length(v)))")
+      libcas2 = abspath.(v)
       config["sim_params.libcas2"] = [libcas2]
     elseif k == "libcas2_config"
-      check(length(v) == 1, "config: libcas2_config: invalid number of parameters ($(length(v)))")
-      libcas2_config = abspath(v[1])
+      check(length(v) >= 1, "config: libcas2_config: invalid number of parameters ($(length(v)))")
+      libcas2_config = abspath.(v)
       config["sim_params.libcas2_config"] = [libcas2_config]
     elseif k == "output_dir"
       check(length(v) == 1, "config: output_dir: invalid number of parameters ($(length(v)))")
@@ -183,7 +183,7 @@ function mcts_main()
       study = MCBestStudy()
   else
       error("No such search method: $(search_method)");
-  end
+  end 
 
   # Create the final config
   cases = generate_cases(collect(config)...)

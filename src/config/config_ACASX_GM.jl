@@ -46,7 +46,7 @@ function defineSimParams(;encounter_number::Int64=1,
                          max_steps::Int64=51,
                          num_aircraft::Int64=2,
                          encounter_model::Symbol=:LLCEMDBN, #:LLCEMDBN, :StarDBN
-                         encounter_equipage::Symbol=:EvE, #:EvE, :EvU
+                         encounter_equipage::Vector{Symbol}=[:Equipped, :Equipped],
                          response_model::Symbol=:ICAO, #:ICAO
                          antiaccel_mode::Symbol=:AgainstRA, #:Off, :AgainstRA, :AnyAccel
                          antiaccel_history_length::Int64=10, 
@@ -58,10 +58,10 @@ function defineSimParams(;encounter_number::Int64=1,
                          command_method::Symbol=:DBN,
                          initial_sample_file::AbstractString=Pkg.dir("RLESCAS/encounters/initial.txt"),
                          transition_sample_file::AbstractString=Pkg.dir("RLESCAS/encounters/transition.txt"),
-                         libcas::AbstractString=Pkg.dir("CCAS/libcas0.10.1/lib/libcas"),
-                         libcas_config::AbstractString=Pkg.dir("CCAS/libcas0.10.1/parameters/0.10.1.standard.r15mtf.tcas.xa.config.txt"),
-                         libcas2::Union{Void,String}=nothing,
-                         libcas2_config::Union{Void,String}=nothing
+                         libcas::Vector{String}=[Pkg.dir("CCAS/libcas0.10.1/lib/libcas")],
+                         libcas_config::Vector{String}=[Pkg.dir("CCAS/libcas0.10.1/parameters/0.10.1.standard.r15mtf.tcas.xa.config.txt")],
+                         libcas2::Vector{String}=String[],
+                         libcas2_config::Vector{String}=String[]
                          )
     p = ACASX_GM_params()
 
@@ -86,7 +86,7 @@ function defineSimParams(;encounter_number::Int64=1,
     p.libcas = libcas
     p.libcas_config = libcas_config
 
-    if libcas2 == nothing || libcas2_config == nothing 
+    if isempty(libcas2) || isempty(libcas2_config)
         return p #single sim run
     end
 
