@@ -88,8 +88,13 @@ function trajSave(study_params::MCTSStudy,
         compute_info = ComputeInfo(startnow, string(now()), gethostname(), 
             (CPUtime_us() - starttime_us) / 1e6)
 
-        save_k_logs(sim, mcts_params, ast, results, compute_info, 
-            sim_params, ast_params, study_params, postproc, outdir)
+        files = save_k_logs(sim, mcts_params, ast, results, compute_info, 
+            sim_params, ast_params, study_params, outdir)
+
+        for f in files
+            #callback for postprocessing
+            postprocess(f, postproc)
+        end
 
         results.rewards[1]
     end, cases)
@@ -103,19 +108,22 @@ end
 
 function save_k_logs(sim::Any, mcts_params::DPWParams, ast::AdaptiveStressTest, 
     results::StressTestResults, compute_info::ComputeInfo, sim_params, 
-    ast_params::ASTParams, study_params::MCTSStudy, postproc::PostProcessing, 
+    ast_params::ASTParams, study_params::MCTSStudy, 
     outdir::AbstractString)
+    files = String[]
     for k = 1:mcts_params.top_k
         fileroot_ = "$(study_params.fileroot)_$(sim.string_id)_k$k"
         outfileroot = joinpath(outdir, fileroot_)
-        save_mcts_log(mcts_params, ast, results, k, compute_info, sim_params,
-            ast_params, study_params, postproc, outfileroot)
+        outfile = save_mcts_log(mcts_params, ast, results, k, compute_info, sim_params,
+            ast_params, study_params, outfileroot)
+        push!(files, outfile)
     end
+    files
 end
 
 function save_k_logs(sim::DualSim, mcts_params::DPWParams, ast::AdaptiveStressTest, 
     results::StressTestResults, compute_info::ComputeInfo, sim_params, 
-    ast_params::ASTParams, study_params::MCTSStudy, postproc::PostProcessing, 
+    ast_params::ASTParams, study_params::MCTSStudy, 
     outdir::AbstractString)
     #save
     ds_transition_model = ast.transition_model
@@ -124,11 +132,13 @@ function save_k_logs(sim::DualSim, mcts_params::DPWParams, ast::AdaptiveStressTe
     #sim1
     ast.sim = ds_sim.sim1
     ast.transition_model = transition_model(ast)
+    files = String[]
     for k = 1:mcts_params.top_k
         fileroot_ = "$(study_params.fileroot)_$(ast.sim.string_id)_k$(k)_sim1"
         outfileroot = joinpath(outdir, fileroot_)
-        save_mcts_log(mcts_params, ast, results, k, compute_info, sim_params[1],
-            ast_params, study_params, postproc, outfileroot; suppress_warn=true)
+        outfile = save_mcts_log(mcts_params, ast, results, k, compute_info, sim_params[1],
+            ast_params, study_params, outfileroot; suppress_warn=true)
+        push!(files, outfile)
     end
 
     #sim2
@@ -137,20 +147,21 @@ function save_k_logs(sim::DualSim, mcts_params::DPWParams, ast::AdaptiveStressTe
     for k = 1:mcts_params.top_k
         fileroot_ = "$(study_params.fileroot)_$(ast.sim.string_id)_k$(k)_sim2"
         outfileroot = joinpath(outdir, fileroot_)
-        save_mcts_log(mcts_params, ast, results, k, compute_info, sim_params[2],
-            ast_params, study_params, postproc, outfileroot; suppress_warn=true)
+        outfile = save_mcts_log(mcts_params, ast, results, k, compute_info, sim_params[2],
+            ast_params, study_params, outfileroot; suppress_warn=true)
+        push!(files, outfile)
     end
 
     #restore
     ast.sim = ds_sim
     ast.transition_model = ds_transition_model
 
-    ast
+    files
 end
 
 function save_mcts_log(mcts_params::DPWParams, ast::AdaptiveStressTest, 
     results::StressTestResults, k::Int64, compute_info::ComputeInfo,
-    sim_params, ast_params::ASTParams, study_params::MCTSStudy, postproc, 
+    sim_params, ast_params::ASTParams, study_params::MCTSStudy,  
     outfileroot::AbstractString; suppress_warn::Bool=false)
 
     log = trajLoggedPlay(ast, results.rewards[k], results.action_seqs[k], 
@@ -164,9 +175,7 @@ function save_mcts_log(mcts_params::DPWParams, ast::AdaptiveStressTest,
     set_q_values!(log, results.q_values[k])
 
     outfile = trajSave(outfileroot, log)
-
-    #callback for postprocessing
-    postprocess(outfile, postproc)
+    outfile
 end
 
 end #module
