@@ -74,6 +74,8 @@ function trajReplay(d::TrajLog; fileroot::AbstractString="")
     copy!(d, d2)
     outfile = trajSave(fileroot, d)
 
+    finalize(sim) #call sim destructors
+
     outfile
 end
 

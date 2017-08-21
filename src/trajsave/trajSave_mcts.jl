@@ -91,6 +91,8 @@ function trajSave(study_params::MCTSStudy,
         files = save_k_logs(sim, mcts_params, ast, results, compute_info, 
             sim_params, ast_params, study_params, outdir)
 
+        finalize(sim) #call sim destructors
+
         for f in files
             #callback for postprocessing
             postprocess(f, postproc)
