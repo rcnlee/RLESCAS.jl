@@ -330,7 +330,7 @@ function closest_is_above(d::TrajLog, own_id::Int64)
             hs = hcat(hs, h2-h1)
         end
     end
-    v, i = findmin(abs(hs), 2)
+    v, i = findmin(abs.(hs), 2)
     minvals = squeeze(hs[i], 2)
 
     minvals .>= 0.0
