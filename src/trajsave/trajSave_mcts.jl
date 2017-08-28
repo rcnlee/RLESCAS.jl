@@ -71,7 +71,7 @@ function trajSave(study_params::MCTSStudy,
                   postproc::PostProcessing=StandardPostProc())
 
     println("Starting MCTS Study...")
-    map(case -> begin
+    pmap(case -> begin
         starttime_us = CPUtime_us()
         startnow = string(now())
 

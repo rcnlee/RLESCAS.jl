@@ -68,13 +68,13 @@ const RESPONSE_STYLE_MAP = [
 
 #xy
 function pgfplot_hor(d::TrajLog)
-    plotArray = vcat(pplot_line(d, "WorldModel", :y, :x),
-        pplot_startpoint(d, "WorldModel", :y, :x, "top"), # label start point
-        pplot_aircraft_num(d, "WorldModel", :y, :x, startdist = 3.4)) # label aircraft numbers
-    xmin, xmax, ymin, ymax = manual_axis_equal(d, "WorldModel", :y, :x)
+    plotArray = vcat(pplot_line(d, :WorldModel, :y, :x),
+        pplot_startpoint(d, :WorldModel, :y, :x, "top"), # label start point
+        pplot_aircraft_num(d, :WorldModel, :y, :x, startdist = 3.4)) # label aircraft numbers
+    xmin, xmax, ymin, ymax = manual_axis_equal(d, :WorldModel, :y, :x)
     ax = Axis(plotArray,
-        ylabel = "N ($(get_unit(d, "WorldModel", 1, :x)))",
-        xlabel = "E ($(get_unit(d, "WorldModel", 1, :y)))",
+        ylabel = "N ($(get_unit(d, :WorldModel, 1, :x)))",
+        xlabel = "E ($(get_unit(d, :WorldModel, 1, :y)))",
         title = "Horizontal Position",
         style = "xmin=$xmin,xmax=$xmax,ymin=$ymin,ymax=$ymax,enlarge x limits=true," *
             "enlarge y limits=true,axis equal,clip mode=individual")
@@ -84,13 +84,13 @@ end
 #altitude vs. time
 function pgfplot_alt(d::TrajLog)
     plotArray = vcat(pplot_z_label270s(d), # label270 short
-        pplot_line(d, "WorldModel", :t, :z),
-        pplot_startpoint(d, "WorldModel", :t, :z, "side", overrideangle = 0), # label start point
-        pplot_aircraft_num(d, "WorldModel", :t, :z, startdist = 3.4)) # label aircraft numbers
+        pplot_line(d, :WorldModel, :t, :z),
+        pplot_startpoint(d, :WorldModel, :t, :z, "side", overrideangle = 0), # label start point
+        pplot_aircraft_num(d, :WorldModel, :t, :z, startdist = 3.4)) # label aircraft numbers
 
     ax = Axis(plotArray,
-            xlabel = "time ($(get_unit(d, "WorldModel", 1, :t)))",
-            ylabel = "h ($(get_unit(d, "WorldModel", 1, :z)))",
+            xlabel = "time ($(get_unit(d, :WorldModel, 1, :t)))",
+            ylabel = "h ($(get_unit(d, :WorldModel, 1, :z)))",
             title = "Altitude vs. Time",
             style = "clip=false,clip mode=individual")
     ax
@@ -98,22 +98,22 @@ end
 
 #heading vs time
 function pgfplot_heading(d::TrajLog)
-    plotArray = vcat(pplot_aircraft_num(d, "Dynamics", :t, :psi, fy=psidot_from_psi), # label aircraft numbers
-        pplot_line(d, "Dynamics", :t, :psi, fy=psidot_from_psi))
+    plotArray = vcat(pplot_aircraft_num(d, :Dynamics, :t, :psi, fy=psidot_from_psi), # label aircraft numbers
+        pplot_line(d, :Dynamics, :t, :psi, fy=psidot_from_psi))
     ax = Axis(plotArray,
-        xlabel = "time ($(get_unit(d, "Dynamics", 1, :t)))",
-        ylabel = "psidot ($(get_unit(d, "Dynamics", 1, :psi))/s)",
+        xlabel = "time ($(get_unit(d, :Dynamics, 1, :t)))",
+        ylabel = "psidot ($(get_unit(d, :Dynamics, 1, :psi))/s)",
         title = "Turn Rate vs. Time")
     ax
 end
 
 #vertical rate vs time
 function pgfplot_vrate(d::TrajLog)
-    plotArray = vcat(pplot_aircraft_num(d, "WorldModel", :t, :vz), # label aircraft numbers
-        pplot_line(d, "WorldModel", :t, :vz))
+    plotArray = vcat(pplot_aircraft_num(d, :WorldModel, :t, :vz), # label aircraft numbers
+        pplot_line(d, :WorldModel, :t, :vz))
     ax = Axis(plotArray,
-        xlabel = "time ($(get_unit(d, "WorldModel", 1, :t)))",
-        ylabel = "vh ($(get_unit(d, "WorldModel", 1, :vz)))",
+        xlabel = "time ($(get_unit(d, :WorldModel, 1, :t)))",
+        ylabel = "vh ($(get_unit(d, :WorldModel, 1, :vz)))",
         title = "Vertical Rate vs. Time")
     ax
 end
@@ -145,7 +145,7 @@ function pgfplotLog(d::TrajLog)
     tps
 end
 
-function manual_axis_equal(d::TrajLog, field::AbstractString, xname::Symbol, 
+function manual_axis_equal(d::TrajLog, field::Symbol, xname::Symbol, 
     yname::Symbol; fx::Function = identity, fy::Function = identity)
 
     xmin = ymin = realmax(Float64)
@@ -187,7 +187,7 @@ end
 
 #xname = field name of x variable
 #yname = field name of y variable
-function pplot_aircraft_num(d::TrajLog, field::AbstractString, xname::Symbol, 
+function pplot_aircraft_num(d::TrajLog, field::Symbol, xname::Symbol, 
     yname::Symbol; ind_start::Int64 = 1,
                             displaystart::Bool = true,
                             displayend::Bool = true,
@@ -243,7 +243,7 @@ end
 #angle = angle of aircraft in degrees.  Pointing right is 0.  nothing = auto-determine from first and second points.
 #minwidth = minimum width of aircraft icon in cm
 
-function pplot_startpoint(d::TrajLog, field::AbstractString, xname::Symbol, 
+function pplot_startpoint(d::TrajLog, field::Symbol, xname::Symbol, 
     yname::Symbol, view::AbstractString;
                           overrideangle::Union{Void, Real} = nothing,
                           ind_start::Int64 = 1,
@@ -292,8 +292,8 @@ function pplot_z_label270s(d::TrajLog; start_time::Int64 = 0, end_time::Int64 = 
 
     plotArray = Plots.Plot[]
     for i = 1:get_num_aircraft(d)
-        wm = d["WorldModel_$i"]
-        cas = d["CAS_$i"]
+        wm = d[Symbol("WorldModel_$i")]
+        cas = d[Symbol("CAS_$i")]
         ts = convert(Array, wm[:t])
         filter!(t -> start_time <= t <= end_time, ts) #filter based on start/end times
 
@@ -320,12 +320,12 @@ function pplot_z_label270s(d::TrajLog; start_time::Int64 = 0, end_time::Int64 = 
 end
 
 function closest_is_above(d::TrajLog, own_id::Int64)
-    wm = d["WorldModel_$(own_id)"]
+    wm = d[Symbol("WorldModel_$(own_id)")]
     h1 = convert(Array, wm[:z])
     hs = copy(h1) 
     for i = 1:get_num_aircraft(d)
         if i != own_id
-            wm_i = d["WorldModel_$i"]
+            wm_i = d[Symbol("WorldModel_$i")]
             h2 = convert(Array, wm_i[:z])
             hs = hcat(hs, h2-h1)
         end
@@ -336,7 +336,7 @@ function closest_is_above(d::TrajLog, own_id::Int64)
     minvals .>= 0.0
 end
 
-function pplot_line(d::TrajLog, field::AbstractString,
+function pplot_line(d::TrajLog, field::Symbol,
                          xname::Symbol,
                          yname::Symbol;
                          mark_ra::Bool = true,
@@ -407,7 +407,7 @@ end
 
 function get_response_style(d::TrajLog, aircraft_number::Int64)
     i = aircraft_number
-    pr = get_log(d, "Response", i)
+    pr = get_log(d, :Response, i)
 
     #stochastic linear case
     if haskey(pr, :response)

@@ -115,11 +115,11 @@ get_hmd(d::TrajLog) = d.log[:run_info][1, :hmd]
 get_md_time(d::TrajLog) = d.log[:run_info][1, :md_time]
 get_logprob(d::TrajLog) = sum(d.log[:logProb][:logprob])
 
-function get_log(d::TrajLog, logname::AbstractString, aircraft_number::Int64)
+function get_log(d::TrajLog, logname::Symbol, aircraft_number::Int64)
     d.log[Symbol("$(logname)_$(aircraft_number)")]
 end
 
-function get_unit(d::TrajLog, logname::AbstractString, aircraft_number::Int64, var::Symbol)
+function get_unit(d::TrajLog, logname::Symbol, aircraft_number::Int64, var::Symbol)
     d.log[Symbol("$(logname)_units_$(aircraft_number)")][1, var]
 end
 

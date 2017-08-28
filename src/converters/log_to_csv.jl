@@ -47,15 +47,15 @@ function calc_catranges(catlengths::Vector{Int64})
   return Range[cl[i]:(cl[i+1] - 1) for i = 1:length(catlengths)]
 end
 
-function log_to_csv{T<:AbstractString}(savefile::AbstractString,
-    lognames::Vector{T}=["Command", "Sensor", "CAS", "Response",
-    "Dynamics", "WorldModel"])
+function log_to_csv(savefile::AbstractString,
+    lognames::Vector{Symbol}=[:Command, :Sensor, :CAS, :Response,
+    :Dynamics, :WorldModel])
 
     d = trajLoad(savefile)
     num_aircraft = get_num_aircraft(d)
     fileroot = getLogFileRoot(savefile)
     for i = 1:num_aircraft
-        D = join_all(map(x->get_log(d, x, i), lognames)...; on=:t, prepend=true)
+        D = join_all(map(x->get_log(d, x, i), lognames); on=:t, names=lognames)
         filename = string(fileroot, "_aircraft$i.csv")
         CSV.write(filename, D) #no units
     end
