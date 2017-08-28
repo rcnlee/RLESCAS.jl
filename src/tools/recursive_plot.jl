@@ -36,7 +36,6 @@ module RecursivePlot
 
 export recursive_plot
 
-using Compat
 using ..Visualize
 
 """
@@ -46,7 +45,7 @@ function recursive_plot(topdir::AbstractString)
     for (root, dirs, files) in walkdir(topdir)
         fs = filter(f->endswith(f, ".json.gz"), files)
         fs = map(f->joinpath(root, f), fs)
-        @compat trajPlot.(fs)
+        trajPlot.(fs)
     end
 end
 

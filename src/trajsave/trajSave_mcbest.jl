@@ -84,10 +84,10 @@ function trajSave(study_params::MCBestStudy,
          starttime_us = CPUtime_us()
          startnow = string(now())
 
-         sim_params = extract_params!(defineSimParams(), case, "sim_params")
-         ast_params = extract_params!(defineASTParams(), case, "ast_params")
-         mcbest_params = extract_params!(defineMCBestParams(), case, "mcbest_params")
-         study_params = extract_params!(study_params, case, "study_params")
+         sim_params = extract_params!(defineSimParams(), case, :sim_params)
+         ast_params = extract_params!(defineASTParams(), case, :ast_params)
+         mcbest_params = extract_params!(defineMCBestParams(), case, :mcbest_params)
+         study_params = extract_params!(study_params, case, :study_params)
 
          sim = defineSim(sim_params)
          ast = defineAST(sim, ast_params)
@@ -130,11 +130,11 @@ end
 
 function get_study_params(d::TrajLog, ::Type{Val{:MCBest}})
     study = MCBestStudy()
-    Obj2DataFrames.set!(study, ObjDataFrame(d["study_params"]))
+    Obj2DataFrames.set!(study, ObjDataFrame(d[:study_params]))
 end
 function get_study_results(d::TrajLog, ::Type{Val{:MCBest}})
     result = MCBestStudyResults()
-    Obj2DataFrames.set!(result, ObjDataFrame(d["study_results"]))
+    Obj2DataFrames.set!(result, ObjDataFrame(d[:study_results]))
 end
 
 end #module

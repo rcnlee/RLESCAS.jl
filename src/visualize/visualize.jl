@@ -393,7 +393,7 @@ end
 
 function get_ra_style(d::TrajLog, aircraft_number::Int64)
     i = aircraft_number
-    cas = d["CAS_$i"]
+    cas = d[Symbol("CAS_$i")]
     ra_active = cas[:ra_active]
     target_rate = cas[:ownOutput_target_rate]
     t_style_array = Tuple{Vector{Int64}, String}[]

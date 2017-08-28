@@ -51,20 +51,20 @@ export get_sim_params, get_ast_params, get_mcts_params, get_compute_info, get_re
 export get_reward, get_num_aircraft, get_vmd, get_hmd, get_md_time, get_logprob, 
     get_nmac, is_nmac, nmacs_only, is_differential
 
-set_sim_params!(d::TrajLog, sim_params) = Loggers.set!(d.log, "sim_params", to_df(sim_params))
-set_ast_params!(d::TrajLog, ast_params) = Loggers.set!(d.log, "ast_params", to_df(ast_params))
-set_mcts_params!(d::TrajLog, mcts_params) = Loggers.set!(d.log, "mcts_params", to_df(mcts_params))
-set_mcbest_params!(d::TrajLog, mcbest_params) = Loggers.set!(d.log, "mcbest_params", 
+set_sim_params!(d::TrajLog, sim_params) = Loggers.set!(d.log, :sim_params, to_df(sim_params))
+set_ast_params!(d::TrajLog, ast_params) = Loggers.set!(d.log, :ast_params, to_df(ast_params))
+set_mcts_params!(d::TrajLog, mcts_params) = Loggers.set!(d.log, :mcts_params, to_df(mcts_params))
+set_mcbest_params!(d::TrajLog, mcbest_params) = Loggers.set!(d.log, :mcbest_params, 
     to_df(mcbest_params))
-set_compute_info!(d::TrajLog, compute_info) = Loggers.set!(d.log, "compute_info", 
+set_compute_info!(d::TrajLog, compute_info) = Loggers.set!(d.log, :compute_info, 
     to_df(compute_info))
-set_study_params!(d::TrajLog, study_params) = Loggers.set!(d.log, "study_params", 
+set_study_params!(d::TrajLog, study_params) = Loggers.set!(d.log, :study_params, 
     to_df(study_params))
-set_study_results!(d::TrajLog, study_results) = Loggers.set!(d.log, "study_results", 
+set_study_results!(d::TrajLog, study_results) = Loggers.set!(d.log, :study_results, 
     to_df(study_results))
-set_run_type!(d::TrajLog, run_type) = Loggers.set!(d.log, "run_type", 
+set_run_type!(d::TrajLog, run_type) = Loggers.set!(d.log, :run_type, 
     DataFrame(Dict(:run_type=>[run_type])))
-set_q_values!(d::TrajLog, q_vals) = Loggers.set!(d.log, "q_values",
+set_q_values!(d::TrajLog, q_vals) = Loggers.set!(d.log, :q_values,
     DataFrame(Dict(:q_values=>q_vals)))
 
 function set_action_seq!(d::TrajLog, action_seq) 
@@ -73,20 +73,20 @@ function set_action_seq!(d::TrajLog, action_seq)
     for a in action_seq
         push!(df, a.rsg.state)
     end
-    Loggers.set!(d.log, "action_seq", df)
+    Loggers.set!(d.log, :action_seq, df)
 end
 
-get_sim_params(d::TrajLog) = Obj2DataFrames.set!(defineSimParams(), ObjDataFrame(d["sim_params"]))
-get_ast_params(d::TrajLog) = Obj2DataFrames.set!(defineASTParams(), ObjDataFrame(d["ast_params"]))
+get_sim_params(d::TrajLog) = Obj2DataFrames.set!(defineSimParams(), ObjDataFrame(d[:sim_params]))
+get_ast_params(d::TrajLog) = Obj2DataFrames.set!(defineASTParams(), ObjDataFrame(d[:ast_params]))
 get_mcts_params(d::TrajLog) = Obj2DataFrames.set!(defineMCTSParams(), 
-    ObjDataFrame(d["mcts_params"]))
+    ObjDataFrame(d[:mcts_params]))
 get_mcbest_params(d::TrajLog) = Obj2DataFrames.set!(defineMCBestParams(), 
-    ObjDataFrame(d["mcbest_params"]))
+    ObjDataFrame(d[:mcbest_params]))
 get_compute_info(d::TrajLog) = Obj2DataFrames.set!(ComputeInfo(),    
-    ObjDataFrame(d["compute_info"]))
+    ObjDataFrame(d[:compute_info]))
 function get_action_seq(d::TrajLog) 
     x = ASTAction[]
-    df = d["action_seq"]
+    df = d[:action_seq]
     n = ncol(df)
     for row in eachrow(df)
         A = squeeze(convert(Array, row), 1)
@@ -94,8 +94,8 @@ function get_action_seq(d::TrajLog)
     end
     x
 end
-get_run_type(d::TrajLog) = d.log["run_type"][1, :run_type]
-get_q_values(d::TrajLog) = d.log["q_values"][:q_values]
+get_run_type(d::TrajLog) = d.log[:run_type][1, :run_type]
+get_q_values(d::TrajLog) = d.log[:q_values][:q_values]
 get_study_params(d::TrajLog) = get_study_params(d, Val{Symbol(get_run_type(d))})
 get_study_results(d::TrajLog) = get_study_results(d, Val{Symbol(get_run_type(d))})
 function get_result(d::TrajLog) 
@@ -105,33 +105,33 @@ function get_result(d::TrajLog)
     StressTestResults(reward, action_seq, q_values)
 end
 
-get_mcts_iterations(d::TrajLog) = d.log["mcts_params"][1, :n]
-get_mcbest_n(d::TrajLog) = d.log["mcbest_params"][1, :n]
+get_mcts_iterations(d::TrajLog) = d.log[:mcts_params][1, :n]
+get_mcbest_n(d::TrajLog) = d.log[:mcbest_params][1, :n]
 
-get_reward(d::TrajLog) = d.log["run_info"][1, :reward] 
-get_num_aircraft(d::TrajLog) = d.log["sim_params"][1, :num_aircraft]
-get_vmd(d::TrajLog) = d.log["run_info"][1, :vmd]
-get_hmd(d::TrajLog) = d.log["run_info"][1, :hmd]
-get_md_time(d::TrajLog) = d.log["run_info"][1, :md_time]
-get_logprob(d::TrajLog) = sum(d.log["logProb"][:logprob])
+get_reward(d::TrajLog) = d.log[:run_info][1, :reward] 
+get_num_aircraft(d::TrajLog) = d.log[:sim_params][1, :num_aircraft]
+get_vmd(d::TrajLog) = d.log[:run_info][1, :vmd]
+get_hmd(d::TrajLog) = d.log[:run_info][1, :hmd]
+get_md_time(d::TrajLog) = d.log[:run_info][1, :md_time]
+get_logprob(d::TrajLog) = sum(d.log[:logProb][:logprob])
 
 function get_log(d::TrajLog, logname::AbstractString, aircraft_number::Int64)
-    d.log["$(logname)_$(aircraft_number)"]
+    d.log[Symbol("$(logname)_$(aircraft_number)")]
 end
 
 function get_unit(d::TrajLog, logname::AbstractString, aircraft_number::Int64, var::Symbol)
-    d.log["$(logname)_units_$(aircraft_number)"][1, var]
+    d.log[Symbol("$(logname)_units_$(aircraft_number)")][1, var]
 end
 
-get_encounter_id(d::TrajLog) = d.log["sim_params"][1, :encounter_number] 
-get_logprobs(d::TrajLog) = convert(Array, d.log["logProb"][:logprob])
+get_encounter_id(d::TrajLog) = d.log[:sim_params][1, :encounter_number] 
+get_logprobs(d::TrajLog) = convert(Array, d.log[:logProb][:logprob])
 
 is_nmac(file::AbstractString) = file |> trajLoad |> get_nmac
-get_nmac(d::TrajLog) = d.log["run_info"][1, :nmac] 
+get_nmac(d::TrajLog) = d.log[:run_info][1, :nmac] 
 nmacs_only{T<:AbstractString}(files::Vector{T}) = filter(is_nmac, files)
 
 function is_differential(d::TrajLog)
-    d.log["sim_params"][1, :libcas2] != "NONE" && d.log["sim_params"][1, :libcas2_config] != "NONE"
+    d.log[:sim_params][1, :libcas2] != "NONE" && d.log[:sim_params][1, :libcas2_config] != "NONE"
 end
 
 end #module

@@ -38,7 +38,7 @@ export extract_params!, extract_params, trajLoggedPlay
 
 using AdaptiveStressTesting
 using CPUTime
-using RLESUtils, Obj2Dict, RunCases, Observers, Loggers, Obj2DataFrames
+using RLESUtils, Obj2Dict, RunCases, OldObservers, Loggers, Obj2DataFrames
 using DataFrames
 
 using ..DefineSave
@@ -98,7 +98,7 @@ function trajLoggedPlay(ast::AdaptiveStressTest, reward, action_seq,
     log = addObservers(ast.sim)
     replay_reward, action_seq2 = play_sequence(ast, action_seq)
 
-    @notify_observer(sim.observer, "run_info", Any[replay_reward, sim.md_time, sim.hmd, 
+    @notify_observer(sim.observer, :run_info, Any[replay_reward, sim.md_time, sim.hmd, 
         sim.vmd, sim.label_as_nmac])
 
     #sanity check replay

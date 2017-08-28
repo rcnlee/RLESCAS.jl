@@ -50,7 +50,7 @@ function label270_to_text(infile::AbstractString)
 
     for i = 1:get_num_aircraft(d)
         println(f, "Aircraft $i")
-        v = d["CAS_$i"][:label270]
+        v = d[Symbol("CAS_$i")][:label270]
         inds = consec_unique_inds(v)
         for t in inds  
             println(f, "$(t) \t\t $(v[t])")

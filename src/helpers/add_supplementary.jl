@@ -46,7 +46,7 @@ function add_label270(file::AbstractString)
     d = trajLoad(file)
     num_aircraft = get_num_aircraft(d)
     for i = 1:num_aircraft
-        df = d["CAS_$i"]
+        df = d[Symbol("CAS_$i")]
         t_end = nrow(df) 
         prev_label_code = 0 #code at previous change
         code_tm1 = 0 #code at t-1

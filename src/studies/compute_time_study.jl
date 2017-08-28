@@ -139,11 +139,11 @@ function gettime(d::SaveDict)
   runtype = sv_run_type(d)
 
   if runtype == "MCTS"
-    sim_params = Obj2Dict.to_obj(d["sim_params"])
-    dpw_params = Obj2Dict.to_obj(d["dpw_params"])
+    sim_params = Obj2Dict.to_obj(d[:sim_params])
+    dpw_params = Obj2Dict.to_obj(d[:dpw_params])
     t = dpw_params.maxtime_s * sim_params.max_steps #since maxtime for mctsdpw is per step
   elseif runtype == "MCBEST"
-    p = Obj2Dict.to_obj(d["study_params"])
+    p = Obj2Dict.to_obj(d[:study_params])
     t = p.maxtime_s
   else
     error("gettime::No such run type $(runtype)")

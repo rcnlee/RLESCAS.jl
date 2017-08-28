@@ -40,6 +40,7 @@ using ..DefineSave
 using ..SaveHelpers
 using DataFrames
 using RLESUtils, DataFrameUtils
+using CSV
 
 function calc_catranges(catlengths::Vector{Int64})
   cl = [1; cumsum(catlengths) + 1]
@@ -54,9 +55,9 @@ function log_to_csv{T<:AbstractString}(savefile::AbstractString,
     num_aircraft = get_num_aircraft(d)
     fileroot = getLogFileRoot(savefile)
     for i = 1:num_aircraft
-        D = join_all(map(x->get_log(d, x, i), lognames)...; on=:t)
+        D = join_all(map(x->get_log(d, x, i), lognames)...; on=:t, prepend=true)
         filename = string(fileroot, "_aircraft$i.csv")
-        writetable(filename, D) #no units
+        CSV.write(filename, D) #no units
     end
 end
 

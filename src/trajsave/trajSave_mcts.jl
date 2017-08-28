@@ -71,7 +71,7 @@ function trajSave(study_params::MCTSStudy,
                   postproc::PostProcessing=StandardPostProc())
 
     println("Starting MCTS Study...")
-    pmap(case -> begin
+    map(case -> begin
         starttime_us = CPUtime_us()
         startnow = string(now())
 
@@ -105,7 +105,7 @@ end
 
 function get_study_params(d::TrajLog, ::Type{Val{:MCTS}})
     study = MCTSStudy()
-    Obj2DataFrames.set!(study, ObjDataFrame(d["study_params"]))
+    Obj2DataFrames.set!(study, ObjDataFrame(d[:study_params]))
 end
 
 function save_k_logs(sim::Any, mcts_params::DPWParams, ast::AdaptiveStressTest, 

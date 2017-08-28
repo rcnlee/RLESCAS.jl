@@ -61,9 +61,9 @@ function trajSave(study_params::OnceStudy,
          starttime_us = CPUtime_us()
          startnow = string(now())
 
-         sim_params = extract_params!(defineSimParams(), case, "sim_params")
-         ast_params = extract_params!(defineASTParams(), case, "ast_params")
-         study_params = extract_params!(study_params, case, "study_params")
+         sim_params = extract_params!(defineSimParams(), case, :sim_params)
+         ast_params = extract_params!(defineASTParams(), case, :ast_params)
+         study_params = extract_params!(study_params, case, :study_params)
 
          sim = defineSim(sim_params)
          ast = defineAST(sim, ast_params)
@@ -73,7 +73,7 @@ function trajSave(study_params::OnceStudy,
 
          reward, action_seq = sample(ast)
 
-         notifyObserver(sim, "run_info", Any[reward, sim.md_time, sim.hmd, sim.vmd, sim.label_as_nmac])
+         notifyObserver(sim, :run_info, Any[reward, sim.md_time, sim.hmd, sim.vmd, sim.label_as_nmac])
 
          compute_info = ComputeInfo(startnow,
                                     string(now()),
@@ -82,11 +82,11 @@ function trajSave(study_params::OnceStudy,
 
 
          sav = SaveDict()
-         sav["run_type"] = "ONCE"
-         sav["compute_info"] = Obj2Dict.to_dict(compute_info)
-         sav["sim_params"] = Obj2Dict.to_dict(sim_params)
-         sav["ast_params"] = Obj2Dict.to_dict(ast_params)
-         sav["sim_log"] = simLog
+         sav[:run_type] = "ONCE"
+         sav[:compute_info] = Obj2Dict.to_dict(compute_info)
+         sav[:sim_params] = Obj2Dict.to_dict(sim_params)
+         sav[:ast_params] = Obj2Dict.to_dict(ast_params)
+         sav[:sim_log] = simLog
 
          fileroot_ = "$(study_params.fileroot)_$(sim.string_id)"
          outfileroot = joinpath(outdir, fileroot_)

@@ -46,7 +46,7 @@ using ..Summarize
 using ..Label270_To_Text
 import ...RLESCAS
 
-abstract PostProcessing
+abstract type PostProcessing end
 
 type StandardPostProc <: PostProcessing
   formats::Vector{String}

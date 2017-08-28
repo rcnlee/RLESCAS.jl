@@ -74,7 +74,7 @@ function collage{T<:AbstractString}(outfileroot::T, clusterdirs::Vector{T},
         tp = PGFPlots.plot(g)
         use_geometry_package!(tp, landscape=true)
         use_aircraftshapes_package!(tp)
-        @compat cap = "Cluster $i: encounters=$(join(string.(enc_ids),","))"
+        cap = "Cluster $i: encounters=$(join(string.(enc_ids)))"
         push!(td, tp; caption=cap)
     end
     TikzPictures.save(TEX(outfileroot), td)
@@ -109,7 +109,7 @@ function collage_compact{T<:AbstractString}(outfileroot::T, clusterdirs::Vector{
         for j = 1:N-NN #fill remaining with empty axis for scaling
             push!(g, Axis())
         end
-        @compat push!(caps, "(Cluster $i: encounters=$(join(string.(enc_ids),",")))")
+        push!(caps, "(Cluster $i: encounters=$(join(string.(enc_ids))))")
     end
     tp = PGFPlots.plot(g)
     use_geometry_package!(tp, landscape=true)
