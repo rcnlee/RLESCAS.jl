@@ -99,12 +99,17 @@ function addObservers(sim::ACASX_GM)
     end
     #data
     add_folder!(log, :logProb, logprob_types(), logprob_names()) 
+    add_folder!(log, :simhash, simhash_types(), simhash_names()) 
     add_folder!(log, :run_info, run_info_types(), run_info_names()) 
 
     #units
     names = logprob_names()
     units = logprob_units()
     add_folder!(log, :logProb_units, fill(String, length(units)), names)
+    push!(log, :logProb_units, units)
+    names = simhash_names()
+    units = simhash_units()
+    add_folder!(log, :simhash_units, fill(String, length(units)), names)
     push!(log, :logProb_units, units)
     names = run_info_names()
     units = run_info_units()
@@ -120,6 +125,7 @@ function addObservers(sim::ACASX_GM)
     addObserver(sim, :Dynamics,   x->log_adm!(log, x))
     addObserver(sim, :WorldModel, x->log_wm!(log, x))
     addObserver(sim, :logProb,   x->log_logProb!(log, x))
+    addObserver(sim, :simhash,   x->log_simhash!(log, x))
     addObserver(sim, :run_info,   x->log_run_info!(log, x))
 
     TrajLog(log)
@@ -491,6 +497,16 @@ end
 logprob_names() = String["t", "logprob"] .|> Symbol
 logprob_types() = [Int64, Float64]
 logprob_units() = String["int", "n/a"]
+
+function log_simhash!(log::TaggedDFLogger, args)
+    #[time_index, logProb]
+    t, simhash = args
+    push!(log, Symbol("simhash"), Any[t, simhash])
+end
+
+simhash_names() = String["t", "simhash"] .|> Symbol
+simhash_types() = [Int64, UInt64]
+simhash_units() = String["int", "n/a"]
 
 function round_floats(v::Vector{Any}, ndigits::Int64; enable::Bool=true)
   out = v
