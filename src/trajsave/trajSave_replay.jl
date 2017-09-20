@@ -50,15 +50,19 @@ using ..Fill_To_Max_Time
 using ..DefineLog
 using ..SaveTypes
 
-function trajReplay(savefile::AbstractString; fileroot::AbstractString="")
+function trajReplay(savefile::AbstractString; 
+    fileroot::AbstractString="", suppress_warn::Bool=false)
+
     d = trajLoad(savefile)
     if isempty(fileroot)
         fileroot = string(getLogFileRoot(savefile), "_replay")
     end
-    trajReplay(d; fileroot=fileroot)
+    trajReplay(d; fileroot=fileroot, suppress_warn=suppress_warn)
 end
 
-function trajReplay(d::TrajLog; fileroot::AbstractString="")
+function trajReplay(d::TrajLog; 
+    fileroot::AbstractString="", suppress_warn::Bool=false)
+
     sim_params = get_sim_params(d)
     ast_params = get_ast_params(d)
     reward = get_reward(d)
@@ -69,7 +73,8 @@ function trajReplay(d::TrajLog; fileroot::AbstractString="")
     compute_info = get_compute_info(d)
     study_params = get_study_params(d)
 
-    d2 = trajLoggedPlay(ast, reward, action_seq, compute_info, sim_params, ast_params)
+    d2 = trajLoggedPlay(ast, reward, action_seq, compute_info, sim_params, ast_params; 
+        suppress_warn=suppress_warn)
 
     copy!(d, d2)
     outfile = trajSave(fileroot, d)
@@ -80,11 +85,12 @@ function trajReplay(d::TrajLog; fileroot::AbstractString="")
 end
 
 function fill_replay(filename::AbstractString; overwrite::Bool=false)
-    fillfile = fill_to_max_time(filename)
+    fillfile, nsteps_appended = fill_to_max_time(filename)
     if overwrite
-        outfile = trajReplay(fillfile, fileroot=getLogFileRoot(filename))
+        outfile = trajReplay(fillfile, fileroot=getLogFileRoot(filename);
+            suppress_warn=(nsteps_appended > 0))
     else
-        outfile = trajReplay(fillfile)
+        outfile = trajReplay(fillfile; suppress_warn=(nsteps_appended > 0))
     end
     rm(fillfile) #delete intermediate fill file
     outfile

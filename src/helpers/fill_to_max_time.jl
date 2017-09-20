@@ -66,7 +66,7 @@ function fill_to_max_time(filename::AbstractString)
     outfilename = trajSave(string(getLogFileRoot(filename), "_filled"), d)
     println("File: ", filename, "; Steps appended: ", steps_to_append)
 
-    outfilename
+    outfilename, steps_to_append
 end
 
 end #module
