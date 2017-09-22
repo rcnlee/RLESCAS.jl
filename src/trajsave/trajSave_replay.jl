@@ -35,6 +35,7 @@
 module TrajSaveReplay
 
 export trajReplay, fill_replay
+export trajReplay_N
 
 using AdaptiveStressTesting
 using RLESUtils, Obj2Dict, Observers
@@ -82,6 +83,32 @@ function trajReplay(d::TrajLog;
     finalize(sim) #call sim destructors
 
     outfile
+end
+function trajReplay_N(savefile::AbstractString, N::Int;
+    fileroot::AbstractString="", suppress_warn::Bool=false)
+
+    d = trajLoad(savefile)
+    if isempty(fileroot)
+        fileroot = string(getLogFileRoot(savefile), "_replay")
+    end
+
+    sim_params = get_sim_params(d)
+    ast_params = get_ast_params(d)
+    reward = get_reward(d)
+    action_seq = get_action_seq(d)
+
+    sim = defineSim(sim_params)
+    ast = defineAST(sim, ast_params)
+    compute_info = get_compute_info(d)
+    study_params = get_study_params(d)
+
+    for i=1:N
+        d2 = trajLoggedPlay(ast, reward, action_seq, compute_info, sim_params, ast_params; 
+            suppress_warn=suppress_warn)
+        outfile = trajSave("$fileroot$i", d2)
+    end
+    finalize(sim) #call sim destructors
+    nothing
 end
 
 function fill_replay(filename::AbstractString; overwrite::Bool=false)
