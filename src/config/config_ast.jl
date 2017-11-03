@@ -40,8 +40,6 @@ using SISLES
 using SISLES.GenerativeModel
 using AdaptiveStressTesting
 
-const COST_ACCEL_NEAR_RA = -5000.0
-
 function defineASTParams(;
                          max_steps::Int64 = 51,
                          rsg_length::Int64 = 3,
@@ -56,6 +54,7 @@ function defineASTParams(;
   return p
 end
 
+const COST_ACCEL_NEAR_RA = -10000.0
 function get_reward_custom(prob::Float64, event::Bool, terminal::Bool, dist::Float64,
                             ast::AdaptiveStressTest, sim::AbstractGenerativeModel) 
   r = log(prob)

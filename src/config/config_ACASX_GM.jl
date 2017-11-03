@@ -90,6 +90,7 @@ function defineSimParams(;encounter_number::Int64=1,
         return p #single sim run
     end
 
+    p.end_on_nmac = false #always disable end_on_nmac for dualsim
     p2 = deepcopy(p)
     p2.libcas = libcas2
     p2.libcas_config = libcas2_config
@@ -100,8 +101,39 @@ end
 #single sim run
 defineSim(p::ACASX_GM_params) = ACASX_GM(p)
 
+const NMAC_REWARD = 5000.0
+const COST_ACCEL_NEAR_RA = -10000.0
+function get_dualsim_reward_custom(prob1::Float64, event1::Bool, term1::Bool, dist1::Float64, 
+                                    prob2::Float64, event2::Bool, term2::Bool, dist2::Float64,
+                                    ast, ds::DualSim)
+    #step probabilities
+    r = log(prob1) + log(prob2)
+
+    #penalize for maneuvering too close to RA for any pilot in any sim
+    if any(pr.accel_near_RA for pr in ds.sim1.pr) || any(pr.accel_near_RA for pr in ds.sim2.pr)
+        r += COST_ACCEL_NEAR_RA
+    end
+
+    #rewards at terminal state
+    if term1 && term2
+        if event1 
+            r += NMAC_REWARD 
+        else #incur distance cost only if !event && terminal
+            r += -dist1
+        end
+        if event2
+            r -= NMAC_REWARD 
+        else #incur distance cost only if !event && terminal
+            r -= -dist2
+        end
+    end
+    return r
+end
+
 #dual sim run
-defineSim(p::Tuple{ACASX_GM_params,ACASX_GM_params}) = DualSim(ACASX_GM(p[1]), ACASX_GM(p[2]))
+function defineSim(p::Tuple{ACASX_GM_params,ACASX_GM_params}) 
+    DualSim(ACASX_GM(p[1]), ACASX_GM(p[2]), get_dualsim_reward_custom)
+end
 
 end #module
 
