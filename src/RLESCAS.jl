@@ -84,9 +84,11 @@ include("helpers/plot_nmacs.jl")
 @reexport using .PlotNMACs
 
 include("visualize/visualize.jl")
+include("visualize/differential_vis.jl")
 
 function include_visualize()
   @eval @reexport using .Visualize 
+  @eval @reexport using .DifferentialVis 
 end
 
 include("trajsave/trajSave_common.jl")

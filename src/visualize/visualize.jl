@@ -105,7 +105,7 @@ function pgfplot_heading(d::TrajLog)
     ax = Axis(plotArray,
         xlabel = "time ($(get_unit(d, "Dynamics", 1, :t)))",
         ylabel = "psidot ($(get_unit(d, "Dynamics", 1, :psi))/s)",
-        title = "Heading Rate vs. Time")
+        title = "Turn Rate vs. Time")
     ax
 end
 
