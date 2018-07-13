@@ -53,48 +53,41 @@ function pgfplot_difflog(d1::TrajLog, d2::TrajLog)
     tps = TikzPicture[]
     caps = AbstractString[]
 
-    g = GroupPlot(2, 2, groupStyle = "horizontal sep = 2.2cm, vertical sep = 2.2cm")
+    g = GroupPlot(4, 2, groupStyle = "horizontal sep = 2cm, vertical sep = 2cm")
 
     #xy1
     push!(g, pgfplot_hor(d1))
 
-    #xy2
-    push!(g, pgfplot_hor(d2))
-
     #altitude vs time 1
     push!(g, pgfplot_alt(d1))
-
-    #altitude vs time 2
-    push!(g, pgfplot_alt(d2))
-
-    tp = PGFPlots.plot(g)
-    use_geometry_package!(tp, landscape = true)
-    use_aircraftshapes_package!(tp)
-    cap = string("sim1 (left): ", vis_runtype_caps(d1), vis_sim_caps(d1), vis_runinfo_caps(d1), 
-        "\\\\sim2 (right): ", vis_runtype_caps(d2), vis_sim_caps(d2), vis_runinfo_caps(d2))
-
-    push!(tps, tp)
-    push!(caps, cap)
-
-    g = GroupPlot(2, 2, groupStyle = "horizontal sep = 2.2cm, vertical sep = 2.2cm")
 
     #heading rate vs time 1
     push!(g, pgfplot_heading(d1))
 
-    #heading rate vs time 2
-    push!(g, pgfplot_heading(d2))
-
     #vertical rate vs time 1
     push!(g, pgfplot_vrate(d1))
+
+    #xy2
+    push!(g, pgfplot_hor(d2))
+
+    #altitude vs time 2
+    push!(g, pgfplot_alt(d2))
+
+    #heading rate vs time 2
+    push!(g, pgfplot_heading(d2))
 
     #vertical rate vs time 2
     push!(g, pgfplot_vrate(d2))
 
     tp = PGFPlots.plot(g)
-    use_geometry_package!(tp, landscape = true)
+    use_geometry_package!(tp, landscape=true, custom="a3paper")
     use_aircraftshapes_package!(tp)
-    #cap = #same as above for now... 
+    cap = string("sim1 (left): ", vis_runtype_caps(d1), vis_sim_caps(d1), vis_runinfo_caps(d1), 
+        "\\\\sim2 (right): ", vis_runtype_caps(d2), vis_sim_caps(d2), vis_runinfo_caps(d2))
 
+    node1 = tikz_node(-2.5, 3.0, "node1", "sim1")
+    node2 = tikz_node(-2.5, -4.75, "node2", "sim2")
+    tp.data = string(tp.data, node1, node2)
     push!(tps, tp)
     push!(caps, cap)
 

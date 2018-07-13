@@ -35,7 +35,7 @@
 module TikzUtils
 
 export add_to_document!, use_geometry_package!, use_aircraftshapes_package!, wrap_tikzpicture!,
-    lualatex_compile
+    lualatex_compile, tikz_node
 
 using TikzPictures
 using RLESUtils, FileUtils
@@ -57,14 +57,16 @@ function add_to_document!{T<:AbstractString}(d::TikzDocument,
     [add_to_document!(d,tps...) for tps in tpsTups]
 end
 
-function use_geometry_package!(p::TikzPicture; margin::Float64 = 0.5, landscape::Bool = false)
+function use_geometry_package!(p::TikzPicture; margin::Float64=0.5, landscape::Bool=false, 
+    custom::AbstractString="")
     # Adds margin enforcement to pdf file
     # Adds capability for landscape
     # margin in inches
     # landscape false is portrait
     orientation_str = landscape ? ",landscape" : ""
     #prepend geometry package
-    p.preamble = "\\usepackage[margin=$(margin)in" * orientation_str * "]{geometry}\n" * p.preamble
+    p.preamble = "\\usepackage[margin=$(margin)in" * orientation_str * 
+        ",$custom]{geometry}\n" * p.preamble
     p
 end
 
@@ -72,6 +74,12 @@ function use_aircraftshapes_package!(p::TikzPicture)
     #prepend aircraftshape package
     p.preamble = "\\usepackage{aircraftshapes}\n" * p.preamble
     p
+end
+
+function tikz_node(x::Float64, y::Float64, 
+    label::AbstractString, text::AbstractString; 
+    options::AbstractString="")
+    "\\node at ($x,$y) [$options] ($label) {$text};\n"
 end
 
 function wrap_tikzpicture!(texfile::AbstractString, pre::AbstractString, post::AbstractString)
