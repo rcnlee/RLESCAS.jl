@@ -43,7 +43,7 @@ using Base.Test
 
 function make_fieldmap(num_aircraft::Int)
 
-  M = OrderedDict{ASCIIString, Tuple{Int64, ASCIIString}}()
+  M = OrderedDict{String, Tuple{Int64, String}}()
 
   for i = 1:num_aircraft
 
@@ -275,7 +275,7 @@ function ll_csv_diff{T<:AbstractString}(sislesfiles::Vector{T}, llfile::Abstract
   lldat = readdlm(llfile)
   sldats = map(readcsv, sislesfiles)
 
-  firstdiff = Tuple{ASCIIString,Int64}[]
+  firstdiff = Tuple{String,Int64}[]
 
   # skip units row
   map!(d -> d[[1,3:end], :], sldats)

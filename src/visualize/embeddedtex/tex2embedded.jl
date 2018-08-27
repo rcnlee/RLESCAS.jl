@@ -70,7 +70,7 @@ function resubplot(infile::AbstractString, newcols::Int, newrows::Int, subplots:
     idx = m.offsets[1] + length(m.captures[1])
   end
 
-  groupplots =ASCIIString[]
+  groupplots =String[]
   for (r1, r2) in zip(transitions[1:end - 1], transitions[2:end] - 1)
     push!(groupplots, s[r1:r2])
   end

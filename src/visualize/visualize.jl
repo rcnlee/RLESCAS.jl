@@ -37,8 +37,6 @@ module Visualize
 export trajPlot
 export pgfplot_hor, pgfplot_alt, pgfplot_heading, pgfplot_vrate
 
-import Compat.ASCIIString
-
 using ..DefineSave
 using ..SaveHelpers
 using ..AddSupplementary
@@ -398,7 +396,7 @@ function get_ra_style(d::TrajLog, aircraft_number::Int64)
     cas = d["CAS_$i"]
     ra_active = cas[:ra_active]
     target_rate = cas[:ownOutput_target_rate]
-    t_style_array = Tuple{Vector{Int64}, ASCIIString}[]
+    t_style_array = Tuple{Vector{Int64}, String}[]
     for (f, s) in RA_STYLE_MAP
         #find times where f is valid and tag it with style s
         times = find(x->f(x[1], x[2]), zip(ra_active, target_rate))
@@ -424,7 +422,7 @@ function get_response_style(d::TrajLog, aircraft_number::Int64)
 
     #deterministic PR case
     if haskey(pr, :state) 
-        t_style_array = Tuple{Vector{Int64}, ASCIIString}[]
+        t_style_array = Tuple{Vector{Int64}, String}[]
 
         for (f, s) in RESPONSE_STYLE_MAP
         times = find(f, pr[:state])

@@ -36,8 +36,6 @@ module Collage
 
 export collage, collage_compact
 
-using Compat
-import Compat.ASCIIString
 using ..DefineSave
 using ..Visualize
 using ..Visualize.TikzUtils
@@ -96,7 +94,7 @@ function collage_compact{T<:AbstractString}(outfileroot::T, clusterdirs::Vector{
     nclusters = length(clusterdirs)
     g = GroupPlot(N, nclusters, groupStyle="horizontal sep=1.75cm, vertical sep=1.75cm")
     enc_ids = Int64[]
-    caps = ASCIIString[] 
+    caps = String[] 
     for (i, dir) in enumerate(clusterdirs)
         fs = readdirGZs(dir)
         NN = min(N, length(fs)) 

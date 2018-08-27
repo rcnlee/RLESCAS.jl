@@ -36,15 +36,13 @@ module NMACStats
 
 export nmac_stats
 
-import Compat.ASCIIString
-
 using ..SaveHelpers
 
 const NMAC_STATS_ROUND_NDECIMALS = 2
 
 function nmac_stats{T<:AbstractString}(infiles::Vector{T}, txtfile::AbstractString = "nmac_stats.txt")
 
-  stats = Dict{ASCIIString,Any}()
+  stats = Dict{String,Any}()
 
   for file = infiles
 
@@ -52,7 +50,7 @@ function nmac_stats{T<:AbstractString}(infiles::Vector{T}, txtfile::AbstractStri
     run_type = d["run_type"]
 
     if !haskey(stats, run_type)
-      stats[run_type] = Dict{ASCIIString,Any}()
+      stats[run_type] = Dict{String,Any}()
       stats[run_type]["nmac_count"] = Int64(0)
       stats[run_type]["nmac_encs_rewards"] = (Int64, Float64)[]
       stats[run_type]["total_count"] = Int64(0)

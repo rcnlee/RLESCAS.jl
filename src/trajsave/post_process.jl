@@ -36,8 +36,6 @@ module PostProcess
 
 export PostProcessing, StandardPostProc, postprocess
 
-import Compat.ASCIIString
-
 using ..TrajSaveReplay
 using ..AddSupplementary
 using ..SaveHelpers
@@ -51,10 +49,10 @@ import ...RLESCAS
 abstract PostProcessing
 
 type StandardPostProc <: PostProcessing
-  formats::Vector{ASCIIString}
-  filters::Vector{ASCIIString}
+  formats::Vector{String}
+  filters::Vector{String}
 end
-StandardPostProc() = StandardPostProc(ASCIIString[], ASCIIString[])
+StandardPostProc() = StandardPostProc(String[], String[])
 
 function postprocess(filename::AbstractString, opts::StandardPostProc)
   formats = opts.formats

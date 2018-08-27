@@ -36,7 +36,7 @@ include("define_save.jl") #trajLoad
 
 function groupattributes{T<:AbstractString}(files::Vector{T}, getlabel::Function, getx::Function, gety::Function)
 
-  outdict = Dict{ASCIIString, Vector{(Float64, Vector{Float64})}}()
+  outdict = Dict{String, Vector{(Float64, Vector{Float64})}}()
 
   M = Array(Any, length(files), 3) #number of files by L,x,y
 

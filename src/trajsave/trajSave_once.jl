@@ -36,8 +36,6 @@ module TrajSaveOnce
 
 export OnceStudy
 
-import Compat.ASCIIString
-
 using AdaptiveStressTesting
 using SISLES.GenerativeModel
 
@@ -47,7 +45,7 @@ using RLESUtils, Obj2Dict, RunCases
 import ..DefineSave.trajSave
 
 type OnceStudy
-  fileroot::ASCIIString
+  fileroot::String
 end
 
 function OnceStudy(;

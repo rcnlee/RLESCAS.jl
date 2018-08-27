@@ -42,11 +42,11 @@ function saveSimTree(dpw::DPW,s::State,outfile::AbstractString)
 
   function process(sn::StateNode,Tout)
     for (a,san) in sn.a
-      node_ = Dict{ASCIIString, Any}()
+      node_ = Dict{String, Any}()
       node_["action"] = hash(a)
       node_["N"] = san.n
       node_["Q"] = san.q
-      node_["states"] = Dict{ASCIIString, Any}[]
+      node_["states"] = Dict{String, Any}[]
 
       push!(Tout, node_)
 
@@ -56,11 +56,11 @@ function saveSimTree(dpw::DPW,s::State,outfile::AbstractString)
 
   function process(san::StateActionNode, Tout)
     for (s, sasn) in san.s
-      node_ = Dict{ASCIIString, Any}()
+      node_ = Dict{String, Any}()
       node_["state"] = hash(s)
       node_["N"] = haskey(dpw.s,s) ? dpw.s[s].n : sasn.n
       node_["r"] = sasn.r
-      node_["actions"] = Dict{ASCIIString, Any}[]
+      node_["actions"] = Dict{String, Any}[]
 
       push!(Tout, node_)
 
@@ -72,10 +72,10 @@ function saveSimTree(dpw::DPW,s::State,outfile::AbstractString)
 
   function process{S<:State}(ss::Vector{S}, Tout)
     for s in ss
-      node_ = Dict{ASCIIString, Any}()
+      node_ = Dict{String, Any}()
       node_["state"] = hash(s)
       node_["N"] = dpw.s[s].n
-      node_["actions"] = Dict{ASCIIString, Any}[]
+      node_["actions"] = Dict{String, Any}[]
 
       push!(Tout, node_)
 
@@ -85,9 +85,9 @@ function saveSimTree(dpw::DPW,s::State,outfile::AbstractString)
     end
   end
 
-  Tout = Dict{ASCIIString, Any}()
+  Tout = Dict{String, Any}()
   Tout["name"] = "root"
-  Tout["states"] = Dict{ASCIIString, Any}[]
+  Tout["states"] = Dict{String, Any}[]
 
   process([s],Tout["states"])
   f = open(outfile, "w")
