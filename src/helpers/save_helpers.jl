@@ -67,12 +67,16 @@ set_run_type!(d::TrajLog, run_type) = Loggers.set!(d.log, :run_type,
 set_q_values!(d::TrajLog, q_vals) = Loggers.set!(d.log, :q_values,
     DataFrame(Dict(:q_values=>q_vals)))
 
-function set_action_seq!(d::TrajLog, action_seq) 
+function set_action_seq!(d::TrajLog, action_seq::Vector{ASTAction}) 
     n = length(action_seq[1].rsg)
     df = DataFrame(fill(UInt32, n), 0)
     for a in action_seq
         push!(df, a.rsg.state)
     end
+    Loggers.set!(d.log, :action_seq, df)
+end
+function set_action_seq!(d::TrajLog, action_seq::Vector{UInt32}) 
+    df = DataFrame(:seed=>action_seq)
     Loggers.set!(d.log, :action_seq, df)
 end
 
