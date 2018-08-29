@@ -54,7 +54,7 @@ type StandardPostProc <: PostProcessing
 end
 StandardPostProc() = StandardPostProc(String[], String[])
 
-function postprocess(filename::AbstractString, opts::StandardPostProc)
+function postprocess(filename::AbstractString, opts::StandardPostProc; fillreplay::Bool=true)
   formats = opts.formats
   filters = opts.filters
 
@@ -63,7 +63,7 @@ function postprocess(filename::AbstractString, opts::StandardPostProc)
   #an intermediate file during the pdf process
 
   #fill and add supplementary to all files
-  fill_replay(filename, overwrite=true)
+  fillreplay && fill_replay(filename, overwrite=true)
   add_supplementary(filename)
   #filters
   for f in filters

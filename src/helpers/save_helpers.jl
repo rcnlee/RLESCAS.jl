@@ -94,7 +94,7 @@ function get_action_seq(d::TrajLog)
     n = ncol(df)
     for row in eachrow(df)
         A = squeeze(convert(Array, row), 1)
-        push!(x, ASTAction(RSG(A)))
+        push!(x, ASTAction{n}(RSG(A)))
     end
     x
 end

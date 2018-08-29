@@ -59,8 +59,8 @@ function trajLoad(logfile::AbstractString)
     TrajLog(load_log(file)) #return
 end
 
-readdirLogs(dir::AbstractString=".") = readdir_ext(".zip", dir)
-isLog(f::AbstractString) = endswith(f, ".zip")
+readdirLogs(dir::AbstractString=".") = readdir_ext(".bson", dir)
+isLog(f::AbstractString) = endswith(f, ".bson")
 
 function getLogFileRoot(file::AbstractString)
     splitext(file)[1]

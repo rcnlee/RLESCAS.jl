@@ -51,15 +51,13 @@ function fill_to_max_time(filename::AbstractString)
     set_sim_params!(d, sim_params)
 
     action_seq = get_action_seq(d)
-    ast_params = get_ast_params(d)
-    rsg_length = ast_params.rsg_length
 
     max_steps = sim_params.max_steps
     steps_to_append = max_steps - length(action_seq)  #determine number of missing steps
 
     # steps_to_append > 0 check is automatically handled by comprehension
-    seed = steps_to_append #arbitrarily use this as a seed
-    actions_to_append = ASTAction[ ASTAction(rsg_length, seed) for t = 1:steps_to_append ] #append hash of t
+    rng = MersenneTwister(steps_to_append) #arbitrarily use this as a seed
+    actions_to_append = rand(rng, typeof(action_seq[1]),steps_to_append)
     action_seq = vcat(action_seq, actions_to_append)
 
     set_action_seq!(d, action_seq)
