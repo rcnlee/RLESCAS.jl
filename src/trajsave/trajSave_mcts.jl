@@ -83,6 +83,7 @@ function trajSave(study_params::MCTSStudy,
         sim = defineSim(sim_params)
         ast = defineAST(sim, ast_params)
 
+        #results = stress_test(ast, mcts_params)
         results = stress_test2(ast, mcts_params)
 
         compute_info = ComputeInfo(startnow, string(now()), gethostname(), 

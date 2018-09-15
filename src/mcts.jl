@@ -127,6 +127,18 @@ function mcts_main()
       check(length(v) == 1, "config: mcts_iterations: invalid number of parameters ($(length(v)))")
       mcts_iterations = parse(Int,v[1])
       config["mcts_params.n"] = [mcts_iterations]
+    elseif k == "mcts_ec"
+      check(length(v) == 1, "config: mcts_ec: invalid number of parameters ($(length(v)))")
+      mcts_ec = parse(Float64,v[1])
+      config["mcts_params.ec"] = [mcts_ec]
+    elseif k == "mcts_k"
+      check(length(v) == 1, "config: mcts_k: invalid number of parameters ($(length(v)))")
+      mcts_k = parse(Float64,v[1])
+      config["mcts_params.k"] = [mcts_k]
+    elseif k == "mcts_alpha"
+      check(length(v) == 1, "config: mcts_alpha: invalid number of parameters ($(length(v)))")
+      mcts_alpha = parse(Float64,v[1])
+      config["mcts_params.alpha"] = [mcts_alpha]
     elseif k == "mcbest_samples"
       check(length(v) == 1, "config: mcbest_samples: invalid number of parameters ($(length(v)))")
       mcbest_samples = parse(Int,v[1])
